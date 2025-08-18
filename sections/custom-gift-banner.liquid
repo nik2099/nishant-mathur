@@ -14,3 +14,50 @@
 
     </div>
 </section>
+{% schema %}
+{
+    "name": "Custom Banner Section",
+    "settings": [
+
+        {
+        "type": "image_picker",
+        "id": "banner_image",
+        "label": "Banner Image"
+        },
+
+        {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "The Gift Guide"
+        },
+
+        {
+        "type": "textarea",
+        "id": "description",
+        "label": "Description",
+        "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
+        },
+
+        {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button Link",
+        "default":"/collections/all"
+        },
+
+        {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button Label",
+        "default": "Shop Now"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Custom Banner",
+            "category": "Custom Sections"
+        }
+    ]
+}
+{% endschema %}
