@@ -5,18 +5,19 @@
         </div>
     {% endif %}
 
+        <div class="banner-info-section">
+            <div class="banner-content">
+                <h2 class="banner-heading">{{ section.settings.heading }}</h2>
+                <p class="banner-description">{{ section.settings.description }}</p>
+                <a href="{{ section.settings.button_link }}" class="banner-btn">
+                    {{ section.settings.button_label }}
+                </a>
 
-    <div class="banner-content">
-        <h2 class="banner-heading">{{ section.settings.heading }}</h2>
-        <p class="banner-description">{{ section.settings.description }}</p>
-        <a href="{{ section.settings.button_link }}" class="banner-btn">
-            {{ section.settings.button_label }}
-        </a>
-
-    </div>
-    <div class="banner-content">
-            <img src="{{ section.settings.banner_image | image_url: width:500 }}" alt="{{ section.settings.heading }}">
-    </div>
+            </div>
+            <div class="banner-content">
+                    <img src="{{ section.settings.banner_image | image_url: width:500 }}" alt="{{ section.settings.heading }}">
+            </div>
+        </div>
     <div class="banner-content-btm">
         <p class="banner-btm">{{ section.settings.description-btm }}</p>
      </div>
