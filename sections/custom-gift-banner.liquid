@@ -5,6 +5,7 @@
         </div>
     {% endif %}
 
+
     <div class="banner-content">
         <h2 class="banner-heading">{{ section.settings.heading }}</h2>
         <p class="banner-description">{{ section.settings.description }}</p>
@@ -12,6 +13,9 @@
             {{ section.settings.button_label }}
         </a>
 
+    </div>
+    <div class="banner-content">
+            <img src="{{ section.settings.banner_image | image_url: width:500 }}" alt="{{ section.settings.heading }}">
     </div>
     <div class="banner-content-btm">
         <p class="banner-btm">{{ section.settings.description-btm }}</p>
@@ -85,7 +89,7 @@
 }
 
 .custom-banner .banner-content {
-  position: absolute;
+  
   bottom: 40px;
   left: 40px;
   background: rgba(255,255,255,0.9);
