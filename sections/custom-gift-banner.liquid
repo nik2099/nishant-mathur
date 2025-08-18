@@ -1,0 +1,16 @@
+<section class="custom-banner">
+    {% if section.settings.banner_image %}
+        <div class="banner-image">
+            <img src="{{ section.settings.banner_image | image_url: width:1440 }}" alt="{{ section.settings.heading }}">
+        </div>
+    {% endif %}
+
+    <div class="banner-content">
+        <h2 class="banner-heading">{{ section.settings.heading }}</h2>
+        <p class="banner-description">{{ section.settings.description }}</p>
+        <a href="{{ section.settings.button_link }}" class="banner-btn">
+            {{ section.settings.button_label }}
+        </a>
+
+    </div>
+</section>
