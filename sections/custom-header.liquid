@@ -1,0 +1,58 @@
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- Mobile Menu Button -->
+    
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Logo Section -->
+
+    <div class="site-logo">
+      {% if settings.logo %}
+        <a href="{{ shop.url }}">
+          <img src="{{ settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" class="logo-img">
+        </a>
+      {% else %}
+        <a href="{{ shop.url }}" class="logo-text">{{ settings.logo_text | default: shop.name }}</a>
+      {% endif %}
+    </div>
+
+    <!-- CTA Section -->
+
+    <div class="header-cta">
+      <span class="cta-text">Find the ideal gift for your loved ones.</span>
+      <a href="/collections/all" class="cta-btn">CHOOSE GIFT →</a>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+
+{
+  "name": "Logo",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text",
+      "default": "TISSO VISON"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Header",
+      "category": "Custom Sections"
+    }
+  ]
+}
+
+{% endschema %}
