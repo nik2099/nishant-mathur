@@ -53,22 +53,10 @@
         "padding_top": 20,
         "padding_bottom": 20
       }
-    },
-    "custom_gift_banner_kmgef8": {
-      "type": "custom-gift-banner",
-      "name": "Custom Banner",
-      "settings": {
-        "banner_image": "shopify://shop_images/young-man-in-bright-fashion_925x_b3b7ebd6-c91f-496a-a516-45403497ea25.jpg",
-        "heading": "The Gift Guide",
-        "description": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.",
-        "button_link": "shopify://collections/all",
-        "button_label": "Shop Now"
-      }
     }
   },
   "order": [
     "announcement-bar",
-    "header",
-    "custom_gift_banner_kmgef8"
+    "header"
   ]
 }
