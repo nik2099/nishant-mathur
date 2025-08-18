@@ -39,3 +39,199 @@
 }
 
 {% endschema %}
+
+<!-- Popup Modal -->
+<div id="product-modal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <div class="modal-body">
+      <div class="modal-image">
+        <img id="modal-product-image" src="" alt="">
+      </div>
+      <div class="modal-info">
+        <h3 id="modal-product-title"></h3>
+        <p id="modal-product-price"></p>
+        <p id="modal-product-description"></p>
+
+        <div id="modal-product-options"></div>
+
+        <button id="modal-add-to-cart" class="add-to-cart-btn">ADD TO CART →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Grid */
+.custom-product-grid .grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+}
+.product-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.quick-view-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.modal-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+.modal-image {
+  flex: 1 1 40%;
+}
+.modal-image img {
+  width: 100%;
+  border-radius: 4px;
+}
+.modal-info {
+  flex: 1 1 55%;
+}
+.modal-info h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+.add-to-cart-btn {
+  background: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 20px;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+.add-to-cart-btn:hover {
+  background: #333;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal-body {
+    flex-direction: column;
+  }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const modal = document.getElementById("product-modal");
+  const modalClose = document.querySelector(".modal-close");
+  const modalImage = document.getElementById("modal-product-image");
+  const modalTitle = document.getElementById("modal-product-title");
+  const modalPrice = document.getElementById("modal-product-price");
+  const modalDescription = document.getElementById("modal-product-description");
+  const modalOptions = document.getElementById("modal-product-options");
+  const addToCartBtn = document.getElementById("modal-add-to-cart");
+
+  // Open modal on quick view click
+  document.querySelectorAll(".quick-view-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const productHandle = this.closest(".product-card").dataset.productHandle;
+
+      // Fetch product JSON from Shopify
+      fetch(`/products/${productHandle}.js`)
+        .then(res => res.json())
+        .then(product => {
+          modalImage.src = product.images[0];
+          modalTitle.textContent = product.title;
+          modalPrice.textContent = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: product.variants[0].price / 100 ? "EUR" : "USD"
+          }).format(product.variants[0].price / 100);
+          modalDescription.textContent = product.description;
+
+          // Build variant options
+          modalOptions.innerHTML = "";
+          product.options.forEach((option, idx) => {
+            const select = document.createElement("select");
+            select.name = option.name;
+            product.variants.forEach(variant => {
+              const opt = document.createElement("option");
+              opt.value = variant.id;
+              opt.textContent = variant.options[idx];
+              select.appendChild(opt);
+            });
+            modalOptions.appendChild(select);
+          });
+
+          addToCartBtn.setAttribute("data-variant-id", product.variants[0].id);
+          modal.style.display = "flex";
+        });
+    });
+  });
+
+  // Close modal
+  modalClose.addEventListener("click", () => modal.style.display = "none");
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+
+  // Add to cart
+  addToCartBtn.addEventListener("click", function() {
+    const variantId = this.getAttribute("data-variant-id");
+    fetch("/cart/add.js", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: variantId, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(() => {
+      alert("Product added to cart!");
+      modal.style.display = "none";
+    });
+  });
+});
+</script>
