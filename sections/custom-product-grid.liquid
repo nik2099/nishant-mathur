@@ -1,0 +1,18 @@
+<section class="custom-product-grid">
+    <div class="grid-wrapper">
+        {% assign collection = collections[section.settings.collection] %}
+        {% if collection != blank %}
+            {% for product in collection.products %}
+                <div class="product-card" data-product-handle="{{ product.handle }}">
+                    <div class="product-image">
+                        <img src="{{ product.featured_image | image_url: width:400 }}" alt="{{ product.title }}">
+                        <button class="quick-view-btn"  aria-label="Quick View">+</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    
+    
+    </div>
+
+</section>
