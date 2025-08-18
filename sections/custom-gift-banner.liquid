@@ -13,6 +13,9 @@
         </a>
 
     </div>
+    <div class="banner-content-btm">
+        <p class="banner-btm">{{ section.settings.description-btm }}</p>
+     </div>
 </section>
 {% schema %}
 {
@@ -51,6 +54,12 @@
         "id": "button_label",
         "label": "Button Label",
         "default": "Shop Now"
+        },
+         {
+        "type": "textarea",
+        "id": "description-btm",
+        "label": "Bottom Heading",
+        "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
         }
     ],
     "presets": [
