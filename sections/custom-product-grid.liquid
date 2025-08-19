@@ -396,7 +396,7 @@ document.querySelector(".add-to-cart-btn").addEventListener("click", function(){
   let selectedColor = document.querySelector(".variant-button.active")?.dataset.value;
   let selectedSize = document.getElementById("sizeSelect")?.value;
 
-  // Try to match correct variant by comparing options in order
+  
   let variant = product.variants.find(v => {
     let match = true;
     if (selectedColor && product.options.includes("Color")) {
