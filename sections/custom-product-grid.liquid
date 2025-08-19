@@ -1,0 +1,322 @@
+<section class="custom-product-grid">
+  <div class="page-width">
+    <!-- Section Heading -->
+    <h2 class="grid-heading">{{ section.settings.section_heading }}</h2>
+
+    <div class="grid-container">
+      {% for block in section.blocks %}
+        {% assign product = all_products[block.settings.product] %}
+        {% if product %}
+          <div class="grid-item">
+            <div class="product-image-wrapper">
+              <img 
+                src="{{ product.featured_image | image_url: width: 600 }}" 
+                alt="{{ product.title }}"
+                class="product-image"
+              >
+              <!-- Plus Icon positioned with custom top/left -->
+              <button 
+                class="plus-icon" 
+                style="top: {{ block.settings.hotspot_top }}%; left: {{ block.settings.hotspot_left }}%;" 
+                aria-label="Open quick view for {{ product.title }}"
+                data-product='{
+                  "id": "{{ product.id }}",
+                  "title": "{{ product.title | escape }}",
+                  "price": "{{ product.price | money }}",
+                  "description": "{{ product.description | strip_html | escape }}",
+                  "image": "{{ product.featured_image | image_url: width: 400 }}",
+                  "url": "{{ product.url }}",
+                  "options": {{ product.options_with_values | json }},
+                  "variants": {{ product.variants | json }}
+                }'>+</button>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div class="product-popup" id="productPopup" role="dialog" aria-modal="true" aria-label="Quick view">
+    <div class="popup-content">
+      <span class="popup-close" id="popupClose" aria-label="Close quick view">&times;</span>
+      <div id="popupBody"></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom Product Grid ",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "Tisso vision in the wild"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_item",
+      "name": "Product Item",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select Product"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_top",
+          "label": "Hotspot Top (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "hotspot_left",
+          "label": "Hotspot Left (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Grid",
+      "category": "Custom Sections",
+      "blocks": [
+        { "type": "product_item" },
+        { "type": "product_item" },
+        { "type": "product_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+.custom-product-grid { font-family: 'Jost', sans-serif; }
+
+.page-width { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+
+.grid-heading { text-align: left; font-size: 36px; margin-bottom: 30px; }
+
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+
+.product-image-wrapper { position: relative; overflow: hidden; }
+.product-image { width: 100%; display: block; }
+
+.plus-icon {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  font-size: 16px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .2s ease;
+}
+.plus-icon:hover { background: #fff; color: #000; }
+
+/* Popup styling */
+.product-popup {
+  display: none; position: fixed; z-index: 9999; inset: 0;
+  background: rgba(0,0,0,.6); overflow: auto;
+}
+.popup-content {
+  background: #fff; margin: 5% auto; padding: 20px;
+  max-width: 311px; position: relative; border-radius: 8px;
+}
+.popup-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
+.popup-product { display: flex; gap: 15px; }
+.popup-product img { max-width: 120px; border-radius: 4px; height: 140px; object-fit: cover; }
+.popup-details { flex: 1; }
+.popup-details h3 { font-size: 1.2rem; margin: 0 0 8px; }
+.popup-details .price { font-weight: 700; margin-bottom: 10px; }
+.popup-details .desc { font-size: .9rem; color: #444; margin-bottom: 15px; }
+
+/* Options */
+.popup-option label { font-size: 14px; font-weight: 400; display: block; margin: 12px 0 6px; }
+.color-options { display: flex; gap: 10px; }
+.color-options button {
+  padding: 8px 12px 8px 16px; border: 1px solid #000; cursor: pointer; background: #fff; width: 100%;
+  text-align: left; position: relative; font-family: 'Jost', sans-serif;
+}
+.color-options button::before {
+  content: ""; width: 6px; height: 100%; position: absolute; top: 0; left: 0; background: var(--color-value, #000);
+}
+.color-options button.active { background: #000; color: #fff; }
+.size-select { width: 100%; padding: 10px; border: 1px solid #aaa; font-family: 'Jost', sans-serif; }
+
+/* Add to Cart */
+.add-to-cart-btn {
+  margin-top: 20px; width: 100%; background: #000; color: #fff; padding: 14px;
+  font-size: 1rem; cursor: pointer; border: none; font-weight: 600;
+}
+.add-to-cart-btn:hover { background: #333; }
+
+@media(max-width: 600px){
+  .popup-product{ flex-direction: column; align-items: center; text-align: center; }
+  .grid-heading{ font-size: 24px; }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const popup = document.getElementById("productPopup");
+  const popupClose = document.getElementById("popupClose");
+  const popupBody = document.getElementById("popupBody");
+  let currentProduct = null; // holds the product JSON from data-attribute for the open popup
+
+  // Map common color names to CSS colors (fallback: use the name itself)
+  const colorToCss = (name) => {
+    const key = (name || "").toString().trim().toLowerCase();
+    const map = {
+      black:"#000000", white:"#ffffff", blue:"#1e73be", navy:"#001f3f", red:"#e02020",
+      green:"#27ae60", grey:"#777777", gray:"#777777", brown:"#8b4513", beige:"#d2b48c",
+      gold:"#c8a045", silver:"#c0c0c0", yellow:"#ffd400", orange:"#ff7a00", pink:"#ff6fae",
+      purple:"#6f42c1", khaki:"#c3b091", maroon:"#800000", teal:"#008080"
+    };
+    return map[key] || name; // if merchant used hex code or valid CSS color string, it still works
+  };
+
+  // open popup from any plus button
+  document.querySelectorAll(".plus-icon").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      try {
+        currentProduct = JSON.parse(this.getAttribute("data-product"));
+      } catch(e) {
+        console.error("Bad product JSON:", e);
+        return;
+      }
+
+      // Build Color buttons (using options_with_values from Liquid)
+      const options = currentProduct.options || [];
+      const colorOpt = options.find(o => (o.name || "").toLowerCase() === "color");
+      const sizeOpt  = options.find(o => (o.name || "").toLowerCase() === "size");
+
+      let colorButtonsHTML = "";
+      if (colorOpt && Array.isArray(colorOpt.values)) {
+        // De-dupe values just in case
+        const seen = new Set();
+        colorOpt.values.forEach(v => {
+          if (seen.has(v)) return;
+          seen.add(v);
+          colorButtonsHTML += `<button type="button" class="color-btn" data-value="${v}" style="--color-value:${colorToCss(v)}">${v}</button>`;
+        });
+      }
+
+      let sizeOptionsHTML = "";
+      if (sizeOpt && Array.isArray(sizeOpt.values)) {
+        sizeOptionsHTML += `<option value="">Choose your size</option>`;
+        sizeOpt.values.forEach(v => sizeOptionsHTML += `<option value="${v}">${v}</option>`);
+      }
+
+      const html = `
+        <div class="popup-product">
+          <img src="${currentProduct.image}" alt="${currentProduct.title}">
+          <div class="popup-details">
+            <h3>${currentProduct.title}</h3>
+            <div class="price">${currentProduct.price}</div>
+            <div class="desc">${currentProduct.description}</div>
+          </div>
+        </div>
+
+        ${colorOpt ? `
+          <div class="popup-option">
+            <label>Color</label>
+            <div class="color-options">${colorButtonsHTML}</div>
+          </div>
+        ` : ""}
+
+        ${sizeOpt ? `
+          <div class="popup-option">
+            <label>Size</label>
+            <select class="size-select">${sizeOptionsHTML}</select>
+          </div>
+        ` : ""}
+
+        <button class="add-to-cart-btn" type="button">ADD TO CART →</button>
+      `;
+
+      popupBody.innerHTML = html;
+      popup.style.display = "block";
+    });
+  });
+
+  // Close popup
+  popupClose.addEventListener("click", () => popup.style.display = "none");
+  window.addEventListener("click", (e) => { if (e.target === popup) popup.style.display = "none"; });
+
+  // Delegate clicks inside popup (works for dynamically injected content)
+  popupBody.addEventListener("click", function(e){
+    // Color select buttons
+    const colorBtn = e.target.closest(".color-btn");
+    if (colorBtn) {
+      popupBody.querySelectorAll(".color-btn").forEach(b => b.classList.remove("active"));
+      colorBtn.classList.add("active");
+      return;
+    }
+
+    // Add to cart
+    const addBtn = e.target.closest(".add-to-cart-btn");
+    if (addBtn) {
+      if (!currentProduct) return;
+
+      const selected = {};
+      const colorActive = popupBody.querySelector(".color-btn.active");
+      const sizeSelect  = popupBody.querySelector(".size-select");
+
+      if (colorActive) selected["Color"] = colorActive.getAttribute("data-value");
+      if (sizeSelect && sizeSelect.value) selected["Size"] = sizeSelect.value;
+
+      // Find matching variant using option1/option2/option3
+      const optNames = (currentProduct.options || []).map(o => (o.name || "").trim());
+      const variants = currentProduct.variants || [];
+
+      const variant = variants.find(v => {
+        // v.option1, v.option2, v.option3 from Liquid JSON
+        return optNames.every((name, idx) => {
+          const selVal = selected[name];
+          if (!selVal) return true; // ignore unselected options
+          const candidate = v["option" + (idx + 1)];
+          return (candidate && candidate.toLowerCase() === selVal.toLowerCase());
+        });
+      }) || variants[0]; // fallback to first variant
+
+      if (!variant || !variant.id) {
+        alert("Please pick available options.");
+        return;
+      }
+
+      // POST to cart
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: variant.id, quantity: 1 })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Cart add failed");
+        return res.json();
+      })
+      .then(data => {
+        // Success UI – swap alert for your theme cart drawer event if needed
+        alert('Added to cart!');
+        popup.style.display = "none";
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Sorry, could not add to cart.');
+      });
+    }
+  });
+});
+</script>
