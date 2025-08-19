@@ -9,9 +9,24 @@
         {% for product in collections[collection_handle].products limit:9 %}
           <div class="grid-item">
             <div class="product-image-wrapper">
-              <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}" class="product-image">
+              <img 
+                src="{{ product.featured_image | image_url: width: 600 }}" 
+                alt="{{ product.title }}"
+                class="product-image"
+              >
               <!-- Plus Icon -->
-              <button class="plus-icon" data-product-id="{{ product.id }}">+</button>
+              <button 
+                class="plus-icon" 
+                data-product='{
+                  "id": "{{ product.id }}",
+                  "title": "{{ product.title | escape }}",
+                  "price": "{{ product.price | money }}",
+                  "description": "{{ product.description | strip_html | escape }}",
+                  "image": "{{ product.featured_image | image_url: width: 400 }}",
+                  "url": "{{ product.url }}",
+                  "options": {{ product.options_with_values | json }},
+                  "variants": {{ product.variants | json }}
+                }'>+</button>
             </div>
             <h3 class="product-title">{{ product.title }}</h3>
           </div>
@@ -25,10 +40,8 @@
   <!-- Popup -->
   <div class="product-popup" id="productPopup">
     <div class="popup-content">
-      <span class="popup-close">&times;</span>
-      <div id="popup-body">
-        <!-- Dynamic content will load here -->
-      </div>
+      <span class="popup-close" id="popupClose">&times;</span>
+      <div id="popupBody"></div>
     </div>
   </div>
 </section>
@@ -52,13 +65,18 @@
   ],
   "presets": [
     {
-      "name": "Custom Product Grid "
+      "name": "Custom Product Grid"
     }
   ]
 }
 {% endschema %}
 
 <style>
+/* FONT */
+.custom-product-grid, .product-popup {
+  font-family: 'Jost', sans-serif;
+}
+
 .custom-product-grid {
   padding: 50px 0;
 }
@@ -140,7 +158,7 @@
   background: #fff;
   margin: 5% auto;
   padding: 20px;
-  max-width: 600px;
+  max-width: 500px;
   position: relative;
   border-radius: 8px;
 }
@@ -153,17 +171,92 @@
   cursor: pointer;
 }
 
-/* Responsive */
-@media(max-width: 991px) {
-  .grid-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.popup-product {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
 }
+
+.popup-product img {
+  max-width: 140px;
+  border-radius: 4px;
+}
+
+.popup-details {
+  flex: 1;
+}
+
+.popup-details h3 {
+  font-size: 1.2rem;
+  margin: 0 0 8px;
+}
+
+.popup-details .price {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.popup-details .desc {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 15px;
+}
+
+/* Options */
+.popup-option {
+  margin-bottom: 15px;
+}
+
+.popup-option label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.color-options {
+  display: flex;
+  gap: 10px;
+}
+
+.color-options button {
+  padding: 8px 15px;
+  border: 1px solid #000;
+  cursor: pointer;
+  background: #fff;
+}
+
+.color-options button.active {
+  background: #000;
+  color: #fff;
+}
+
+.size-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #aaa;
+}
+
+/* Add to Cart */
+.add-to-cart-btn {
+  margin-top: 20px;
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+}
+
+.add-to-cart-btn:hover {
+  background: #333;
+}
+
+/* Responsive */
 @media(max-width: 600px) {
-  .grid-container {
-    grid-template-columns: 1fr;
-  }
-  .grid-heading {
+  .popup-product {
+    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 }
@@ -176,22 +269,60 @@ document.addEventListener("DOMContentLoaded", function() {
   var popupClose = document.getElementById("popupClose");
   var popupBody = document.getElementById("popupBody");
 
-  // Handle click on plus icons
   plusButtons.forEach(function(button) {
     button.addEventListener("click", function() {
-      var productId = this.getAttribute("data-product-id");
-      // Placeholder content (you can extend later)
-      popupBody.innerHTML = "<p>Popup content for product ID: " + productId + "</p>";
+      var productData = JSON.parse(this.getAttribute("data-product"));
+
+      // Build popup HTML
+      var popupHTML = `
+        <div class="popup-product">
+          <img src="${productData.image}" alt="${productData.title}">
+          <div class="popup-details">
+            <h3>${productData.title}</h3>
+            <div class="price">${productData.price}</div>
+            <div class="desc">${productData.description}</div>
+          </div>
+        </div>
+        
+        <div class="popup-option">
+          <label>Color</label>
+          <div class="color-options">
+            <button type="button">Blue</button>
+            <button type="button">Black</button>
+          </div>
+        </div>
+
+        <div class="popup-option">
+          <label>Size</label>
+          <select class="size-select">
+            <option>Choose your size</option>
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Large</option>
+          </select>
+        </div>
+
+        <button class="add-to-cart-btn">ADD TO CART →</button>
+      `;
+
+      popupBody.innerHTML = popupHTML;
       popup.style.display = "block";
+
+      // Handle color selection
+      var colorButtons = popupBody.querySelectorAll(".color-options button");
+      colorButtons.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          colorButtons.forEach(b => b.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
     });
   });
 
-  // Close button
   popupClose.addEventListener("click", function() {
     popup.style.display = "none";
   });
 
-  // Close when clicking outside popup
   window.addEventListener("click", function(event) {
     if (event.target === popup) {
       popup.style.display = "none";
