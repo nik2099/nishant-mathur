@@ -298,98 +298,62 @@ document.addEventListener("DOMContentLoaded", function() {
 
   plusButtons.forEach(function(button) {
     button.addEventListener("click", function() {
-      var handle = this.dataset.handle;
+      var productData = JSON.parse(this.getAttribute("data-product"));
 
-      fetch(`/products/${handle}.js`)
-        .then(res => res.json())
-        .then(product => {
-          let colorOptions = '';
-          let sizeOptions = '';
+      // Build popup HTML
+      var popupHTML = `
+        <div class="popup-product">
+          <img src="${productData.image}" alt="${productData.title}">
+          <div class="popup-details">
+            <h3>${productData.title}</h3>
+            <div class="price">${productData.price}</div>
+            <div class="desc">${productData.description}</div>
+          </div>
+        </div>
+        
+        <div class="popup-option">
+          <label>Color</label>
+          <div class="color-options">
+            <button type="button">Blue</button>
+            <button type="button">Black</button>
+          </div>
+        </div>
 
-          if(product.options.includes("Color")) {
-            let colorIndex = product.options.indexOf("Color");
-            let colors = [...new Set(product.variants.map(v => v.options[colorIndex]))];
-            colorOptions = `
-              <div class="variant-options">
-                <div class="variant-label">Color</div>
-                <div class="variant-buttons">
-                  ${colors.map(c => `<div class="variant-button" data-color="${c}" data-value="${c}">${c}</div>`).join("")}
-                </div>
-              </div>
-            `;
-          }
+        <div class="popup-option">
+          <label>Size</label>
+          <select class="size-select">
+            <option>Choose your size</option>
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Large</option>
+          </select>
+        </div>
 
-          if(product.options.includes("Size")) {
-            let sizeIndex = product.options.indexOf("Size");
-            let sizes = [...new Set(product.variants.map(v => v.options[sizeIndex]))];
-            sizeOptions = `
-              <div class="variant-options">
-                <div class="variant-label">Size</div>
-                <select class="variant-select" id="sizeSelect">
-                  <option value="">Choose your size</option>
-                  ${sizes.map(s => `<option value="${s}">${s}</option>`).join("")}
-                </select>
-              </div>
-            `;
-          }
+        <button class="add-to-cart-btn">ADD TO CART →</button>
+      `;
 
-          let popupHTML = `
-            <div class="popup-product">
-              <img src="${product.featured_image}" alt="${product.title}" style="max-width:200px; margin-bottom:15px;">
-              <h3>${product.title}</h3>
-              <div class="price">${(product.price/100).toFixed(2)} ${Shopify.currency.active}</div>
-              <div class="desc">${product.description}</div>
-              ${colorOptions}
-              ${sizeOptions}
-              <button class="add-to-cart-btn" data-product-id="${product.id}">ADD TO CART</button>
-            </div>
-          `;
+      popupBody.innerHTML = popupHTML;
+      popup.style.display = "block";
 
-          popupBody.innerHTML = popupHTML;
-          popup.style.display = "block";
-
-          // Color selection
-          document.querySelectorAll(".variant-button").forEach(btn => {
-            btn.addEventListener("click", function(){
-              document.querySelectorAll(".variant-button").forEach(b => b.classList.remove("active"));
-              this.classList.add("active");
-            });
-          });
-
-          // Add to Cart
-          document.querySelector(".add-to-cart-btn").addEventListener("click", function(){
-            let selectedColor = document.querySelector(".variant-button.active")?.dataset.value;
-            let selectedSize = document.getElementById("sizeSelect")?.value;
-
-            let variant = product.variants.find(v => {
-              let match = true;
-              if(selectedColor) match = match && v.options.includes(selectedColor);
-              if(selectedSize) match = match && v.options.includes(selectedSize);
-              return match;
-            });
-
-            if(variant) {
-              fetch('/cart/add.js', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: variant.id, quantity: 1 })
-              }).then(() => {
-                alert('Added to cart!');
-                popup.style.display = "none";
-              });
-            } else {
-              alert("Please select options");
-            }
-          });
+      // Handle color selection
+      var colorButtons = popupBody.querySelectorAll(".color-options button");
+      colorButtons.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          colorButtons.forEach(b => b.classList.remove("active"));
+          this.classList.add("active");
         });
+      });
     });
   });
 
   popupClose.addEventListener("click", function() {
     popup.style.display = "none";
   });
-  window.addEventListener("click", function(e) {
-    if (e.target === popup) popup.style.display = "none";
+
+  window.addEventListener("click", function(event) {
+    if (event.target === popup) {
+      popup.style.display = "none";
+    }
   });
 });
 </script>
