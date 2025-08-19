@@ -5,22 +5,31 @@
         </div>
     {% endif %}
 
-        <div class="banner-info-section">
-            <div class="banner-content">
-                <h2 class="banner-heading">{{ section.settings.heading }}</h2>
-                <p class="banner-description">{{ section.settings.description }}</p>
-                <a href="{{ section.settings.button_link }}" class="banner-btn">
-                    {{ section.settings.button_label }}
-                </a>
+         <div class="gift-guide-container">
+    
+                <!-- Left Content -->
+                <div class="gift-guide-left">
+                <h2>{{ section.settings.collection_heading }}</h2>
+                <p>{{ section.settings.collection_description }}</p>
+                {% if section.settings.collection_button_link != blank %}
+                    <a href="{{ section.settings.collection_button_link }}" class="gift-guide-btn">
+                    {{ section.settings.collection_button_text }}
+                    </a>
+                {% endif %}
+                </div>
 
+                <!-- Right Image -->
+                <div class="gift-guide-right">
+                {% if section.settings.right_image %}
+                    <img src="{{ section.settings.right_image | image_url: width: 900 }}" alt="Gift Guide Image">
+                {% endif %}
+                </div>
             </div>
-            <div class="info-image">
-                    <img src="{{ section.settings.info_image | image_url: width:1440 }}" alt="{{ section.settings.heading }}">
+
+            <!-- Bottom Small Heading -->
+            <div class="gift-guide-bottom">
+                <p>{{ section.settings.bottom_heading }}</p>
             </div>
-        </div>
-    <div class="banner-content-btm">
-        <p class="banner-btm">{{ section.settings.description-btm }}</p>
-     </div>
 </section>
 {% schema %}
 {
@@ -33,42 +42,43 @@
         "label": "Banner Image"
         },
 
-        {
-        "type": "text",
-        "id": "heading",
-        "label": "Heading",
-        "default": "The Gift Guide"
+       {
+      "type": "text",
+      "id": "collection_heading",
+      "label": "Collection Heading",
+      "default": "The Gift Guide"
         },
 
         {
         "type": "textarea",
-        "id": "description",
-        "label": "Description",
+        "id": "collection_description",
+        "label": "Collection Description",
         "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
         },
 
         {
         "type": "url",
-        "id": "button_link",
-        "label": "Button Link",
-        "default":"/collections/all"
+        "id": "collection_button_link",
+        "label": "Button Link"
         },
 
         {
         "type": "text",
-        "id": "button_label",
-        "label": "Button Label",
+        "id": "collection_button_text",
+        "label": "Button Text",
         "default": "Shop Now"
         },
+
         {
         "type": "image_picker",
-        "id": "info_image",
-        "label": "Banner Image"
+        "id": "right_image",
+        "label": "Right Side Image"
         },
-         {
-        "type": "textarea",
-        "id": "description-btm",
-        "label": "Bottom Heading",
+        
+        {
+        "type": "text",
+        "id": "bottom_heading",
+        "label": "Bottom Small Heading",
         "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
         }
     ],
