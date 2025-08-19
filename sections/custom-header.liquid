@@ -2,7 +2,6 @@
   <div class="header-inner">
 
     <!-- Mobile Menu Button -->
-
     <button class="menu-toggle" aria-label="Toggle menu">
       <span></span>
       <span></span>
@@ -10,7 +9,6 @@
     </button>
 
     <!-- Logo Section -->
-
     <div class="site-logo">
       {% if settings.logo %}
         <a href="{{ shop.url }}">
@@ -21,9 +19,16 @@
       {% endif %}
     </div>
 
-    <!-- CTA Section -->
+    <!-- CTA Section (desktop only) -->
+    <div class="header-cta desktop-cta">
+      <span class="cta-text">Find the ideal gift for your loved ones.</span>
+      <a href="/collections/all" class="cta-btn">CHOOSE GIFT →</a>
+    </div>
+  </div>
 
-    <div class="header-cta">
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <div class="header-cta mobile-cta">
       <span class="cta-text">Find the ideal gift for your loved ones.</span>
       <a href="/collections/all" class="cta-btn">CHOOSE GIFT →</a>
     </div>
@@ -31,7 +36,6 @@
 </header>
 
 {% schema %}
-
 {
   "name": "Logo",
   "settings": [
@@ -54,16 +58,15 @@
     }
   ]
 }
-
 {% endschema %}
 
 <style>
-
-    /* Header Styles */
+/* Header Styles */
 .site-header {
   background: #f9f9f9;
   border-bottom: 1px solid #eee;
   padding: 10px 20px;
+  position: relative;
 }
 
 .header-inner {
@@ -130,23 +133,45 @@
   display: block;
 }
 
+/* Mobile Menu */
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 20px;
+  text-align: center;
+}
+.mobile-menu.active {
+  display: block;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  .header-inner {
-    flex-direction: row;
-    justify-content: space-between;
+  .desktop-cta {
+    display: none;
   }
-
-  .header-cta {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-  }
-
   .menu-toggle {
     display: flex;
   }
 }
-
+@media (min-width: 769px) {
+  .mobile-menu {
+    display: none !important;
+  }
+}
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const toggle = document.querySelector(".menu-toggle");
+  const mobileMenu = document.querySelector(".mobile-menu");
+
+  toggle.addEventListener("click", function(){
+    mobileMenu.classList.toggle("active");
+  });
+});
+</script>
