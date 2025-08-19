@@ -263,6 +263,8 @@ document.addEventListener("DOMContentLoaded", function() {
   plusButtons.forEach(function(button) {
     button.addEventListener("click", function() {
       var productData = JSON.parse(this.getAttribute("data-product"));
+
+      // Build popup HTML
       var popupHTML = `
         <div class="popup-product">
           <img src="${productData.image}" alt="${productData.title}">
@@ -272,19 +274,50 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="desc">${productData.description}</div>
           </div>
         </div>
-        <a href="${productData.url}" class="add-to-cart-btn">VIEW PRODUCT →</a>
+        
+        <div class="popup-option">
+          <label>Color</label>
+          <div class="color-options">
+            <button type="button">Blue</button>
+            <button type="button">Black</button>
+          </div>
+        </div>
+
+        <div class="popup-option">
+          <label>Size</label>
+          <select class="size-select">
+            <option>Choose your size</option>
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Large</option>
+          </select>
+        </div>
+
+        <button class="add-to-cart-btn">ADD TO CART →</button>
       `;
+
       popupBody.innerHTML = popupHTML;
       popup.style.display = "block";
+
+      // Handle color selection
+      var colorButtons = popupBody.querySelectorAll(".color-options button");
+      colorButtons.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          colorButtons.forEach(b => b.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
     });
   });
 
   popupClose.addEventListener("click", function() {
     popup.style.display = "none";
   });
-  window.addEventListener("click", function(e) {
-    if (e.target === popup) popup.style.display = "none";
+
+  window.addEventListener("click", function(event) {
+    if (event.target === popup) {
+      popup.style.display = "none";
+    }
   });
 });
 </script>
-
