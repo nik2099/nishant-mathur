@@ -2,7 +2,7 @@
   <div class="header-inner">
 
     <!-- Mobile Menu Button -->
-    
+
     <button class="menu-toggle" aria-label="Toggle menu">
       <span></span>
       <span></span>
@@ -56,3 +56,97 @@
 }
 
 {% endschema %}
+
+<style>
+
+    /* Header Styles */
+.site-header {
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  padding: 10px 20px;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo */
+.site-logo {
+  flex-shrink: 0;
+}
+.logo-img {
+  max-height: 40px;
+}
+.logo-text {
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #000;
+}
+
+/* CTA Section */
+.header-cta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.cta-text {
+  font-size: 14px;
+  color: #333;
+}
+.cta-btn {
+  background: #ffeb3b;
+  color: #000;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.3s ease;
+}
+.cta-btn:hover {
+  background: #fdd835;
+}
+
+/* Mobile Menu Toggle */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.menu-toggle span {
+  width: 20px;
+  height: 2px;
+  background: #000;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .header-cta {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+}
+
+</style>
