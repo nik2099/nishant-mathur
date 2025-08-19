@@ -24,9 +24,7 @@
                   "price": "{{ product.price | money }}",
                   "description": "{{ product.description | strip_html | escape }}",
                   "image": "{{ product.featured_image | image_url: width: 400 }}",
-                  "url": "{{ product.url }}",
-                  "options": {{ product.options_with_values | json }},
-                  "variants": {{ product.variants | json }}
+                  "url": "{{ product.url }}"
                 }'>+</button>
             </div>
             <h3 class="product-title">{{ product.title }}</h3>
@@ -48,18 +46,13 @@
 
 {% schema %}
 {
-  "name": "Custom Product Grid",
+  "name": "Custom Product Grid ",
   "settings": [
     {
       "type": "text",
       "id": "section_heading",
       "label": "Section Heading",
       "default": "Tisso vision in the wild"
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Select Collection"
     }
   ],
   "blocks": [
@@ -95,7 +88,7 @@
   ],
   "presets": [
     {
-      "name": "Custom Product Grid ",
+      "name": "Custom Product Grid",
        "category": "Custom Sections",
       "blocks": [
         { "type": "product_item" },
@@ -108,9 +101,7 @@
 {% endschema %}
 
 <style>
-/* FONT */
-.custom-product-grid,
-.product-popup {
+.custom-product-grid {
   font-family: 'Jost', sans-serif;
 }
 
@@ -128,7 +119,7 @@
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 25px;
 }
 
@@ -155,6 +146,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .plus-icon:hover {
@@ -162,7 +154,13 @@
   color: #fff;
 }
 
-/* Popup styling remains same as before */
+.product-title {
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+/* Popup Styles */
 .product-popup {
   display: none;
   position: fixed;
@@ -171,7 +169,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
   background: rgba(0,0,0,0.6);
 }
 
@@ -181,106 +179,77 @@
   padding: 20px;
   max-width: 500px;
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .popup-close {
   position: absolute;
   top: 10px;
   right: 15px;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
+  color: #333;
 }
+
+.popup-close:hover {
+  color: #000;
+}
+
 .popup-product {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .popup-product img {
-  max-width: 120px;
-  border-radius: 4px;
-  height: 140px;
-}
-
-.popup-details {
-  flex: 1;
+  max-width: 200px;
+  margin-bottom: 15px;
 }
 
 .popup-details h3 {
-  font-size: 1.2rem;
-  margin: 0 0 8px;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 .popup-details .price {
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
 .popup-details .desc {
-  font-size: 0.9rem;
-  color: #444;
-  margin-bottom: 15px;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 20px;
 }
 
-/* Options */
-.popup-option {
-  margin-bottom: 15px;
-}
-
-.popup-option label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.color-options {
-  display: flex;
-  gap: 10px;
-}
-
-.color-options button {
-  padding: 8px 15px;
-  border: 1px solid #000;
-  cursor: pointer;
-  background: #fff;
-  width: 100%;
-}
-
-.color-options button.active {
-  background: #000;
-  color: #fff;
-}
-
-.size-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #aaa;
-}
-
-/* Add to Cart */
 .add-to-cart-btn {
-  margin-top: 20px;
-  width: 100%;
   background: #000;
   color: #fff;
-  padding: 14px;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
-  border: none;
+  transition: background 0.2s ease;
 }
 
 .add-to-cart-btn:hover {
-  background: #333;
+  background: #444;
 }
 
-/* Responsive */
-@media(max-width: 600px) {
-  .popup-product {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+/* Mobile */
+@media (max-width: 768px) {
+  .grid-heading { text-align: center; }
+  .popup-content { width: 90%; }
 }
 </style>
 
@@ -294,8 +263,6 @@ document.addEventListener("DOMContentLoaded", function() {
   plusButtons.forEach(function(button) {
     button.addEventListener("click", function() {
       var productData = JSON.parse(this.getAttribute("data-product"));
-
-      // Build popup HTML
       var popupHTML = `
         <div class="popup-product">
           <img src="${productData.image}" alt="${productData.title}">
@@ -305,50 +272,19 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="desc">${productData.description}</div>
           </div>
         </div>
-        
-        <div class="popup-option">
-          <label>Color</label>
-          <div class="color-options">
-            <button type="button">Blue</button>
-            <button type="button">Black</button>
-          </div>
-        </div>
-
-        <div class="popup-option">
-          <label>Size</label>
-          <select class="size-select">
-            <option>Choose your size</option>
-            <option>Small</option>
-            <option>Medium</option>
-            <option>Large</option>
-          </select>
-        </div>
-
-        <button class="add-to-cart-btn">ADD TO CART →</button>
+        <a href="${productData.url}" class="add-to-cart-btn">VIEW PRODUCT →</a>
       `;
-
       popupBody.innerHTML = popupHTML;
       popup.style.display = "block";
-
-      // Handle color selection
-      var colorButtons = popupBody.querySelectorAll(".color-options button");
-      colorButtons.forEach(function(btn) {
-        btn.addEventListener("click", function() {
-          colorButtons.forEach(b => b.classList.remove("active"));
-          this.classList.add("active");
-        });
-      });
     });
   });
 
   popupClose.addEventListener("click", function() {
     popup.style.display = "none";
   });
-
-  window.addEventListener("click", function(event) {
-    if (event.target === popup) {
-      popup.style.display = "none";
-    }
+  window.addEventListener("click", function(e) {
+    if (e.target === popup) popup.style.display = "none";
   });
 });
 </script>
+
