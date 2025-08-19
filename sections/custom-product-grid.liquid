@@ -15,21 +15,21 @@
                 class="product-image"
               >
               <!-- Plus Icon positioned with custom top/left -->
-             <button 
+              <button 
                 class="plus-icon" 
                 style="top: {{ block.settings.hotspot_top }}%; left: {{ block.settings.hotspot_left }}%;" 
+                aria-label="Open quick view for {{ product.title }}"
                 data-product='{
-                    "id": "{{ product.id }}",
-                    "title": "{{ product.title | escape }}",
-                    "price": "{{ product.price | money }}",
-                    "description": "{{ product.description | strip_html | escape }}",
-                    "image": "{{ product.featured_image | image_url: width: 400 }}",
-                    "url": "{{ product.url }}",
-                    "options": {{ product.options_with_values | json }},
-                    "variants": {{ product.variants | json }}
+                  "id": "{{ product.id }}",
+                  "title": "{{ product.title | escape }}",
+                  "price": "{{ product.price | money }}",
+                  "description": "{{ product.description | strip_html | escape }}",
+                  "image": "{{ product.featured_image | image_url: width: 400 }}",
+                  "url": "{{ product.url }}",
+                  "options": {{ product.options_with_values | json }},
+                  "variants": {{ product.variants | json }}
                 }'>+</button>
             </div>
-           
           </div>
         {% endif %}
       {% endfor %}
@@ -37,14 +37,13 @@
   </div>
 
   <!-- Popup -->
-  <div class="product-popup" id="productPopup">
+  <div class="product-popup" id="productPopup" role="dialog" aria-modal="true" aria-label="Quick view">
     <div class="popup-content">
-      <span class="popup-close" id="popupClose">&times;</span>
+      <span class="popup-close" id="popupClose" aria-label="Close quick view">&times;</span>
       <div id="popupBody"></div>
     </div>
   </div>
 </section>
-
 
 {% schema %}
 {
@@ -91,7 +90,7 @@
   "presets": [
     {
       "name": "Custom Product Grid",
-       "category": "Custom Sections",
+      "category": "Custom Sections",
       "blocks": [
         { "type": "product_item" },
         { "type": "product_item" },
@@ -103,37 +102,16 @@
 {% endschema %}
 
 <style>
-.custom-product-grid {
-  font-family: 'Jost', sans-serif;
-}
+.custom-product-grid { font-family: 'Jost', sans-serif; }
 
-.page-width {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
-}
+.page-width { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
 
-.grid-heading {
-  text-align: left;
-  font-size: 36px;
-  margin-bottom: 30px;
-}
+.grid-heading { text-align: left; font-size: 36px; margin-bottom: 30px; }
 
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-}
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
 
-.product-image-wrapper {
-  position: relative;
-  overflow: hidden;
-}
-
-.product-image {
-  width: 100%;
-  display: block;
-}
+.product-image-wrapper { position: relative; overflow: hidden; }
+.product-image { width: 100%; display: block; }
 
 .plus-icon {
   position: absolute;
@@ -141,293 +119,204 @@
   background: #fff;
   border: 1px solid #fff;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+  width: 20px; height: 20px;
+  font-size: 16px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .2s ease;
 }
-
-.plus-icon:hover {
-  background: #fff;
-  color: #000000;
-}
-
-.product-title {
-  text-align: center;
-  font-size: 1rem;
-  margin-top: 10px;
-}
+.plus-icon:hover { background: #fff; color: #000; }
 
 /* Popup styling */
 .product-popup {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background: rgba(0,0,0,0.6);
+  display: none; position: fixed; z-index: 9999; inset: 0;
+  background: rgba(0,0,0,.6); overflow: auto;
 }
-
 .popup-content {
-  background: #fff;
-  margin: 5% auto;
-  padding: 20px;
-  max-width: 311px;
-  position: relative;
-  border-radius: 8px;
+  background: #fff; margin: 5% auto; padding: 20px;
+  max-width: 311px; position: relative; border-radius: 8px;
 }
-
-.popup-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.popup-product {
-  display: flex;
-  gap: 15px;
-  
-}
-
-.popup-product img {
-    max-width: 120px;
-    border-radius: 4px;
-    height: 140px;
-    object-fit: cover;
-}
-
-.popup-details {
-  flex: 1;
-}
-
-.popup-details h3 {
-  font-size: 1.2rem;
-  margin: 0 0 8px;
-}
-
-.popup-details .price {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.popup-details .desc {
-  font-size: 0.9rem;
-  color: #444;
-  margin-bottom: 15px;
-}
+.popup-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
+.popup-product { display: flex; gap: 15px; }
+.popup-product img { max-width: 120px; border-radius: 4px; height: 140px; object-fit: cover; }
+.popup-details { flex: 1; }
+.popup-details h3 { font-size: 1.2rem; margin: 0 0 8px; }
+.popup-details .price { font-weight: 700; margin-bottom: 10px; }
+.popup-details .desc { font-size: .9rem; color: #444; margin-bottom: 15px; }
 
 /* Options */
-.popup-option {
- 
-}
-
-.popup-option label {
-  font-size: 14px;
-  font-weight: 400;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.color-options {
-  display: flex;
-  gap: 10px;
-}
+.popup-option label { font-size: 14px; font-weight: 400; display: block; margin: 12px 0 6px; }
+.color-options { display: flex; gap: 10px; }
 .color-options button {
-  padding: 8px 15px;
-  border: 1px solid #000;
-  cursor: pointer;
-  background: #fff;
-  width: 100%;
-  text-align: left;
-  position: relative;
+  padding: 8px 12px 8px 16px; border: 1px solid #000; cursor: pointer; background: #fff; width: 100%;
+  text-align: left; position: relative; font-family: 'Jost', sans-serif;
 }
-
 .color-options button::before {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: var(--color-value, #000); /* fallback black */
+  content: ""; width: 6px; height: 100%; position: absolute; top: 0; left: 0; background: var(--color-value, #000);
 }
-
-.color-options button.active {
-  background: #000;
-  color: #fff;
-}
-
-.size-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #aaa;
-}
+.color-options button.active { background: #000; color: #fff; }
+.size-select { width: 100%; padding: 10px; border: 1px solid #aaa; font-family: 'Jost', sans-serif; }
 
 /* Add to Cart */
 .add-to-cart-btn {
-  margin-top: 20px;
-  width: 100%;
-  background: #000;
-  color: #fff;
-  padding: 14px;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
+  margin-top: 20px; width: 100%; background: #000; color: #fff; padding: 14px;
+  font-size: 1rem; cursor: pointer; border: none; font-weight: 600;
 }
+.add-to-cart-btn:hover { background: #333; }
 
-.add-to-cart-btn:hover {
-  background: #333;
-}
-
-/* Responsive */
-@media(max-width: 600px) {
-  .popup-product {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .grid-heading {
-    font-size: 24px;
-    
-}
+@media(max-width: 600px){
+  .popup-product{ flex-direction: column; align-items: center; text-align: center; }
+  .grid-heading{ font-size: 24px; }
 }
 </style>
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  var plusButtons = document.querySelectorAll(".plus-icon");
-  var popup = document.getElementById("productPopup");
-  var popupClose = document.getElementById("popupClose");
-  var popupBody = document.getElementById("popupBody");
+  const popup = document.getElementById("productPopup");
+  const popupClose = document.getElementById("popupClose");
+  const popupBody = document.getElementById("popupBody");
+  let currentProduct = null; // holds the product JSON from data-attribute for the open popup
 
-  plusButtons.forEach(function(button) {
-    button.addEventListener("click", function() {
-      var productData = JSON.parse(this.getAttribute("data-product"));
-      var options = productData.options || [];
-      var variants = productData.variants || [];
+  // Map common color names to CSS colors (fallback: use the name itself)
+  const colorToCss = (name) => {
+    const key = (name || "").toString().trim().toLowerCase();
+    const map = {
+      black:"#000000", white:"#ffffff", blue:"#1e73be", navy:"#001f3f", red:"#e02020",
+      green:"#27ae60", grey:"#777777", gray:"#777777", brown:"#8b4513", beige:"#d2b48c",
+      gold:"#c8a045", silver:"#c0c0c0", yellow:"#ffd400", orange:"#ff7a00", pink:"#ff6fae",
+      purple:"#6f42c1", khaki:"#c3b091", maroon:"#800000", teal:"#008080"
+    };
+    return map[key] || name; // if merchant used hex code or valid CSS color string, it still works
+  };
 
-      // find color & size option
-      var colorOption = options.find(function(o){ return o.name.toLowerCase() === "color"; });
-      var sizeOption = options.find(function(o){ return o.name.toLowerCase() === "size"; });
+  // open popup from any plus button
+  document.querySelectorAll(".plus-icon").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      try {
+        currentProduct = JSON.parse(this.getAttribute("data-product"));
+      } catch(e) {
+        console.error("Bad product JSON:", e);
+        return;
+      }
 
-      // Build color buttons
-      var colorButtonsHTML = "";
-      if (colorOption) {
-        colorOption.values.forEach(function(value) {
-          colorButtonsHTML += `
-            <button type="button" class="color-btn" data-color="${value}" style="--color-value:${value.toLowerCase()};">
-              ${value}
-            </button>
-          `;
+      // Build Color buttons (using options_with_values from Liquid)
+      const options = currentProduct.options || [];
+      const colorOpt = options.find(o => (o.name || "").toLowerCase() === "color");
+      const sizeOpt  = options.find(o => (o.name || "").toLowerCase() === "size");
+
+      let colorButtonsHTML = "";
+      if (colorOpt && Array.isArray(colorOpt.values)) {
+        // De-dupe values just in case
+        const seen = new Set();
+        colorOpt.values.forEach(v => {
+          if (seen.has(v)) return;
+          seen.add(v);
+          colorButtonsHTML += `<button type="button" class="color-btn" data-value="${v}" style="--color-value:${colorToCss(v)}">${v}</button>`;
         });
       }
 
-      // Build size dropdown
-      var sizeOptionsHTML = "";
-      if (sizeOption) {
-        sizeOptionsHTML += `<option>Choose your size</option>`;
-        sizeOption.values.forEach(function(value) {
-          sizeOptionsHTML += `<option value="${value}">${value}</option>`;
-        });
+      let sizeOptionsHTML = "";
+      if (sizeOpt && Array.isArray(sizeOpt.values)) {
+        sizeOptionsHTML += `<option value="">Choose your size</option>`;
+        sizeOpt.values.forEach(v => sizeOptionsHTML += `<option value="${v}">${v}</option>`);
       }
 
-      // Final Popup HTML
-      var popupHTML = `
+      const html = `
         <div class="popup-product">
-          <img src="${productData.image}" alt="${productData.title}">
+          <img src="${currentProduct.image}" alt="${currentProduct.title}">
           <div class="popup-details">
-            <h3>${productData.title}</h3>
-            <div class="price">${productData.price}</div>
-            <div class="desc">${productData.description}</div>
+            <h3>${currentProduct.title}</h3>
+            <div class="price">${currentProduct.price}</div>
+            <div class="desc">${currentProduct.description}</div>
           </div>
         </div>
-        
-        ${colorOption ? `
-        <div class="popup-option">
-          <label>Color</label>
-          <div class="color-options">${colorButtonsHTML}</div>
-        </div>` : ""}
 
-        ${sizeOption ? `
-        <div class="popup-option">
-          <label>Size</label>
-          <select class="size-select">${sizeOptionsHTML}</select>
-        </div>` : ""}
+        ${colorOpt ? `
+          <div class="popup-option">
+            <label>Color</label>
+            <div class="color-options">${colorButtonsHTML}</div>
+          </div>
+        ` : ""}
 
-        <button class="add-to-cart-btn">ADD TO CART →</button>
+        ${sizeOpt ? `
+          <div class="popup-option">
+            <label>Size</label>
+            <select class="size-select">${sizeOptionsHTML}</select>
+          </div>
+        ` : ""}
+
+        <button class="add-to-cart-btn" type="button">ADD TO CART →</button>
       `;
 
-      popupBody.innerHTML = popupHTML;
+      popupBody.innerHTML = html;
       popup.style.display = "block";
+    });
+  });
 
-      // Handle color selection
-      var colorButtons = popupBody.querySelectorAll(".color-options .color-btn");
-      colorButtons.forEach(function(btn) {
-        btn.addEventListener("click", function() {
-          colorButtons.forEach(function(b){ b.classList.remove("active"); });
-          this.classList.add("active");
+  // Close popup
+  popupClose.addEventListener("click", () => popup.style.display = "none");
+  window.addEventListener("click", (e) => { if (e.target === popup) popup.style.display = "none"; });
+
+  // Delegate clicks inside popup (works for dynamically injected content)
+  popupBody.addEventListener("click", function(e){
+    // Color select buttons
+    const colorBtn = e.target.closest(".color-btn");
+    if (colorBtn) {
+      popupBody.querySelectorAll(".color-btn").forEach(b => b.classList.remove("active"));
+      colorBtn.classList.add("active");
+      return;
+    }
+
+    // Add to cart
+    const addBtn = e.target.closest(".add-to-cart-btn");
+    if (addBtn) {
+      if (!currentProduct) return;
+
+      const selected = {};
+      const colorActive = popupBody.querySelector(".color-btn.active");
+      const sizeSelect  = popupBody.querySelector(".size-select");
+
+      if (colorActive) selected["Color"] = colorActive.getAttribute("data-value");
+      if (sizeSelect && sizeSelect.value) selected["Size"] = sizeSelect.value;
+
+      // Find matching variant using option1/option2/option3
+      const optNames = (currentProduct.options || []).map(o => (o.name || "").trim());
+      const variants = currentProduct.variants || [];
+
+      const variant = variants.find(v => {
+        // v.option1, v.option2, v.option3 from Liquid JSON
+        return optNames.every((name, idx) => {
+          const selVal = selected[name];
+          if (!selVal) return true; // ignore unselected options
+          const candidate = v["option" + (idx + 1)];
+          return (candidate && candidate.toLowerCase() === selVal.toLowerCase());
         });
+      }) || variants[0]; // fallback to first variant
+
+      if (!variant || !variant.id) {
+        alert("Please pick available options.");
+        return;
+      }
+
+      // POST to cart
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: variant.id, quantity: 1 })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Cart add failed");
+        return res.json();
+      })
+      .then(data => {
+        // Success UI – swap alert for your theme cart drawer event if needed
+        alert('Added to cart!');
+        popup.style.display = "none";
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Sorry, could not add to cart.');
       });
-    });
-  });
-
-  popupClose.addEventListener("click", function() {
-    popup.style.display = "none";
-  });
-
-  window.addEventListener("click", function(event) {
-    if (event.target === popup) {
-      popup.style.display = "none";
     }
   });
-});
-
-// Add to Cart
-document.querySelector(".add-to-cart-btn").addEventListener("click", function(){
-  let selectedColor = document.querySelector(".variant-button.active")?.dataset.value;
-  let selectedSize = document.getElementById("sizeSelect")?.value;
-
-  
-  let variant = product.variants.find(v => {
-    let match = true;
-    if (selectedColor && product.options.includes("Color")) {
-      let colorIndex = product.options.indexOf("Color");
-      match = match && (v.options[colorIndex] === selectedColor);
-    }
-    if (selectedSize && product.options.includes("Size")) {
-      let sizeIndex = product.options.indexOf("Size");
-      match = match && (v.options[sizeIndex] === selectedSize);
-    }
-    return match;
-  });
-
-  if(variant) {
-    fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: variant.id, quantity: 1 })
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Added to cart:", data);
-      alert('Added to cart!');
-      popup.style.display = "none";
-    })
-    .catch(err => {
-      console.error("Cart error:", err);
-      alert("Something went wrong adding to cart.");
-    });
-  } else {
-    alert(" Please select required options before adding to cart.");
-  }
 });
 </script>
