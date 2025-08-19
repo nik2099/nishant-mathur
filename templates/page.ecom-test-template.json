@@ -34,6 +34,7 @@
       "type": "custom-product-grid",
       "name": "Custom Product Grid",
       "settings": {
+        "section_heading": "Tisso vision in the wild",
         "collection": "test-collection"
       }
     }
