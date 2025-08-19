@@ -75,6 +75,7 @@
   justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
 }
 
 /* Logo */
@@ -125,6 +126,10 @@
   background: none;
   border: none;
   cursor: pointer;
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .menu-toggle span {
   width: 20px;
@@ -154,10 +159,18 @@
   .desktop-cta {
     display: none;
   }
+
+  /* Center the logo */
+  .site-logo {
+    margin: 0 auto;
+    text-align: center;
+  }
+
   .menu-toggle {
     display: flex;
   }
 }
+
 @media (min-width: 769px) {
   .mobile-menu {
     display: none !important;
