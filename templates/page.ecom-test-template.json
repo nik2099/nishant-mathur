@@ -24,7 +24,7 @@
         "banner_image": "shopify://shop_images/Frame.png",
         "collection_heading": "The Gift Guide",
         "collection_description": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.",
-        "collection_button_link": "",
+        "collection_button_link": "shopify://collections/test-collection",
         "collection_button_text": "Shop Now",
         "right_image": "shopify://shop_images/Frame_1.png",
         "bottom_heading": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
