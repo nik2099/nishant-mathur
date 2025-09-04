@@ -1,34 +1,59 @@
-{% if customer and customer.tags contains 'VIP' %}
-  {% if product.selected_or_first_available_variant.metafields.custom.vip_product_handle %}
-    {% assign vip_handle = product.selected_or_first_available_variant.metafields.custom.vip_product_handle %}
-    {% assign vip_product = all_products[vip_handle] %}
-    {% if vip_product %}
-      {% assign vip_variant = vip_product.variants.first %}
-      <script>
-        window.VIP_VARIANT = {
-          vipVariantId: {{ vip_variant.id | json }},
-          vipPrice: {{ vip_variant.price | money | json }}
-        };
-      </script>
-      <style>
-        #price-{{ section.id }} { color: #d00; }
-      </style>
-      <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          // Update displayed price
-          const priceEl = document.querySelector("#price-{{ section.id }}");
-          if (priceEl && window.VIP_VARIANT) {
-            priceEl.innerHTML = `<span class="vip-price">VIP: ${window.VIP_VARIANT.vipPrice}</span>`;
-          }
+{%- comment -%}
+snippets/vip-pricing.liquid
+Emits a small client-side object:
+window.currentProductVipData = {
+  isCustomerVIP: true/false,
+  variantMapping: {
+    "<original_variant_id>": {
+      vip_variant_id: 123456789,
+      vip_price_formatted: "$12.00"
+    }, ...
+  }
+}
+Requires: each original variant has metafield vip.product_handle (the handle of the VIP product).
+{%- endcomment -%}
 
-          // Force add-to-cart to use VIP variant ID
-          const form = document.querySelector("#product-form-{{ section.id }}");
-          if (form && window.VIP_VARIANT) {
-            let idInput = form.querySelector("input[name='id']");
-            if (idInput) idInput.value = window.VIP_VARIANT.vipVariantId;
-          }
-        });
-      </script>
-    {% endif %}
-  {% endif %}
+{% assign customer_is_vip = false %}
+{% if customer and customer.tags contains 'VIP' %}
+  {% assign customer_is_vip = true %}
 {% endif %}
+
+<script>
+window.currentProductVipData = {
+  isCustomerVIP: {{ customer_is_vip | json }},
+  variantMapping: {
+    {% for variant in product.variants %}
+      "{{ variant.id }}": {
+        "vip_variant_id": {% assign vip_handle = variant.metafields.vip.product_handle %}
+          {% if vip_handle != blank %}
+            {% assign vip_prod = all_products[vip_handle] %}
+            {% if vip_prod %}
+              {% assign vip_match_id = "" %}
+              {% assign vip_match_price_formatted = "" %}
+              {% for vp in vip_prod.variants %}
+                {% if vp.title == variant.title %}
+                  {% assign vip_match_id = vp.id %}
+                  {% assign vip_match_price_formatted = vp.price | money %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% if vip_match_id != "" %}
+                {{ vip_match_id }}
+              {% else %}
+                null
+              {% endif %}
+            {% else %}
+              null
+            {% endif %}
+          {% else %}
+            null
+          {% endif %},
+        "vip_price_formatted": {% if vip_match_price_formatted != "" %}{{ vip_match_price_formatted | json }}{% else %}null{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  }
+};
+</script>
+
+<!-- load JS (create this asset in assets/vip-pricing.js) -->
+<script src="{{ 'vip-pricing.js' | asset_url }}"></script>
