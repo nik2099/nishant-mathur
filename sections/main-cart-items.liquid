@@ -481,41 +481,43 @@
   </script>
 
   <button id="apply-vip-cart-prices" type="button" class="button">
-    Apply VIP prices
-  </button>
+  Apply VIP prices
+</button>
 
-  <script>
-  document.addEventListener("DOMContentLoaded", function(){
-    const btn = document.getElementById("apply-vip-cart-prices");
-    if (!btn) return;
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const btn = document.getElementById("apply-vip-cart-prices");
+  if (!btn) return;
 
-    btn.addEventListener("click", function(){
-      if (!window.cartVipMappings) return;
-      const entries = Object.entries(window.cartVipMappings);
-      if (entries.length === 0) {
-        alert("No VIP items found to swap.");
-        return;
+  btn.addEventListener("click", async function(){
+    if (!window.cartVipMappings) return;
+
+    const cart = await fetch("/cart.js").then(r => r.json());
+    const updates = {};
+
+    cart.items.forEach(item => {
+      const vipVariant = window.cartVipMappings[item.variant_id];
+      if (vipVariant) {
+        updates[item.id] = 0; // remove original
+        updates[vipVariant] = item.quantity; // add VIP variant
       }
-
-      function updateNext(i){
-        if (i >= entries.length){
-          window.location.reload();
-          return;
-        }
-        const [lineIndex, variantId] = entries[i];
-        fetch("/cart/change.js", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ line: parseInt(lineIndex, 10), id: variantId, quantity: 1 })
-        })
-        .then(r => r.json())
-        .then(() => updateNext(i+1))
-        .catch(() => updateNext(i+1));
-      }
-      updateNext(0);
     });
+
+    if (Object.keys(updates).length === 0) {
+      alert("No VIP items found to swap.");
+      return;
+    }
+
+    await fetch("/cart/update.js", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ updates })
+    });
+
+    location.reload(); // refresh to show VIP prices
   });
-  </script>
+});
+</script>
 {% endif %}
 <script>
   window.cartVipMappings = {
