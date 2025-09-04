@@ -517,7 +517,27 @@
   });
   </script>
 {% endif %}
-
+<script>
+  window.cartVipMappings = {
+    {% for item in cart.items %}
+      {% if item.product %}
+        {% assign product = item.product %}
+        {% for variant in product.variants %}
+          {% assign vip_handle = variant.metafields.vip.product_handle %}
+          {% if vip_handle != blank %}
+            {% assign vip_product = all_products[vip_handle] %}
+            {% if vip_product %}
+              {% assign vip_variant = vip_product.variants | where: "title", variant.title | first %}
+              {% if vip_variant %}
+                "{{ variant.id }}": "{{ vip_variant.id }}",
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  };
+</script>
 </cart-items>
 
 {% schema %}
